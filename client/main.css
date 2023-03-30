@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+
+body {
+	padding: 10px;
+	font-family: 'Open Sans', sans-serif;
+}
+
+.container {
+	width: 500px;
+}
+
+input[type='checkbox']:checked + label {
+	text-decoration: line-through;
+	opacity: 40%;
+}
+
+ul {
+	margin-block-start: 0;
+	padding-inline-start: 0;
+}
+
+li {
+	list-style: none;
+	font-weight: 500;
+	margin-right: -50px;
+}
+
+.btn {
+	margin-inline-start: 50px;
+}
