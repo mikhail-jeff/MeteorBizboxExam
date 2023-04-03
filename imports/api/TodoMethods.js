@@ -19,7 +19,7 @@ Meteor.methods({
 		});
 	},
 
-	// * UPDATE ODO
+	// * UPDATE TODO
 	updateTodo(selectedTodo, newTodo) {
 		Todos.update(selectedTodo._id, {
 			$set: {

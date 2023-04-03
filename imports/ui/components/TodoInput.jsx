@@ -5,7 +5,6 @@ import React, { Component } from 'react';
 export default class TodoInput extends Component {
 	constructor(props) {
 		super(props);
-
 		this.state = {
 			todo: '',
 			editing: false,
@@ -16,8 +15,12 @@ export default class TodoInput extends Component {
 		const { todo, handleSubmit, handleChange, editing, todoError } = this.props;
 
 		return (
-			<form onSubmit={handleSubmit}>
+			<form
+				onSubmit={handleSubmit}
+				style={{ textAlign: 'center' }}
+			>
 				<TextField
+					fullWidth
 					floatingLabelText='Add new todo'
 					type='text'
 					value={todo}
@@ -27,7 +30,8 @@ export default class TodoInput extends Component {
 
 				<RaisedButton
 					type='submit'
-					primary={true}
+					fullWidth
+					primary
 					label={editing ? 'EDIT' : 'ADD'}
 				/>
 			</form>

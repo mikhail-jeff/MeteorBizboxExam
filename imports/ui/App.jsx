@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Meteor } from 'meteor/meteor';
 
 import { Todos } from '../api/TodoCollections';
 
@@ -9,10 +10,13 @@ import TodoList from './components/TodoList';
 import Header from './components/Header';
 import RaisedButton from 'material-ui/RaisedButton';
 
+import NotificationSystem from 'react-notification-system';
+
+const style = { maxWidth: '800px', margin: 'auto', padding: '50px', borderRadius: '5px', backgroundColor: '#eee', boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px' };
+
 export default class App extends TrackerReact(Component) {
 	constructor(props) {
 		super(props);
-
 		this.state = {
 			todos: [],
 			todo: '',
@@ -23,6 +27,8 @@ export default class App extends TrackerReact(Component) {
 				todos: Meteor.subscribe('allTodos'),
 			},
 		};
+
+		this.notificationSystem = React.createRef();
 	}
 
 	// * handle change
@@ -46,11 +52,40 @@ export default class App extends TrackerReact(Component) {
 
 		if (newTodo === '') {
 			this.setState({ todoError: true });
+
+			const notification = this.notificationSystem.current;
+			notification.addNotification({
+				title: 'Input field is required!',
+				message: 'Please fillout the textfield.',
+				level: 'error',
+				autoDismiss: 2,
+				position: 'tc',
+			});
 		} else {
 			if (!this.state.editing) {
 				Meteor.call('addTodo', newTodo);
+
+				const notification = this.notificationSystem.current;
+
+				notification.addNotification({
+					title: 'Add Complete',
+					message: `${newTodo} added successfully!`,
+					level: 'success',
+					autoDismiss: 2,
+					position: 'tc',
+				});
 			} else {
 				Meteor.call('updateTodo', this.state.selectedTodo, newTodo);
+
+				const notification = this.notificationSystem.current;
+
+				notification.addNotification({
+					title: 'Update Complete',
+					message: `${newTodo} updated successfully!`,
+					level: 'success',
+					autoDismiss: 2,
+					position: 'tc',
+				});
 			}
 		}
 
@@ -64,6 +99,26 @@ export default class App extends TrackerReact(Component) {
 	// * delete all todos
 	deleteAllTodos() {
 		Meteor.call('deleteAllTodos');
+
+		if (this.todos().length < 1) {
+			const notification = this.notificationSystem.current;
+			notification.addNotification({
+				title: 'Todo lists is already empty!',
+				message: 'No lists to clear',
+				level: 'success',
+				autoDismiss: 2,
+				position: 'tc',
+			});
+		} else {
+			const notification = this.notificationSystem.current;
+			notification.addNotification({
+				title: 'Todo lists cleared!',
+				message: 'All todo has been deleted!',
+				level: 'success',
+				autoDismiss: 2,
+				position: 'tc',
+			});
+		}
 	}
 
 	// * edit todo
@@ -79,7 +134,7 @@ export default class App extends TrackerReact(Component) {
 		const allTodos = this.todos();
 
 		return (
-			<div style={{ width: '350px', margin: 'auto', padding: '50px', borderRadius: '5px', backgroundColor: '#eee', boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px' }}>
+			<div style={style}>
 				<Header todos={allTodos} />
 				<hr />
 
@@ -100,10 +155,11 @@ export default class App extends TrackerReact(Component) {
 				<div style={{ marginTop: '20px' }}>
 					<RaisedButton
 						label='Clear List'
-						primary={true}
-						fullWidth={true}
+						primary
+						fullWidth
 						onClick={this.deleteAllTodos.bind(this)}
 					/>
+					<NotificationSystem ref={this.notificationSystem} />
 				</div>
 			</div>
 		);

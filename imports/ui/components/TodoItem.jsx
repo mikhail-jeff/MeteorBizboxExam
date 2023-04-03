@@ -1,24 +1,61 @@
+import NotificationSystem from 'react-notification-system';
+
 import React, { Component } from 'react';
+import { Meteor } from 'meteor/meteor';
+
 import RaisedButton from 'material-ui/RaisedButton';
 
 export default class TodoItem extends Component {
 	constructor(props) {
 		super(props);
-
 		this.state = {
 			todo: '',
 			inputValue: '',
 		};
-	}
 
-	// * toggle check
-	toggleChecked() {
-		Meteor.call('toggleTodo', this.props.todo._id, this.props.todo.complete);
+		this.notificationSystem = React.createRef();
 	}
 
 	// * handle delete
 	handleDelete() {
 		Meteor.call('deleteTodo', this.props.todo._id);
+
+		const notification = this.notificationSystem.current;
+
+		notification.addNotification({
+			title: 'Delete Complete!',
+			message: `${this.props.todo.text} deleted successfully!!`,
+			level: 'success',
+			autoDismiss: 5,
+			position: 'tc',
+		});
+
+		console.log(`${this.props.todo.text} has been deleted`);
+	}
+
+	// * toggle check
+	toggleChecked() {
+		Meteor.call('toggleTodo', this.props.todo._id, this.props.todo.complete);
+
+		if (!this.props.todo.complete) {
+			const notification = this.notificationSystem.current;
+			notification.addNotification({
+				title: 'Marked complete!',
+				message: `${this.props.todo.text} has been marked complete!`,
+				level: 'success',
+				autoDismiss: 2,
+				position: 'tc',
+			});
+		} else {
+			const notification = this.notificationSystem.current;
+			notification.addNotification({
+				title: 'Marked incomplete!',
+				message: `${this.props.todo.text} has been marked incomplete!`,
+				level: 'success',
+				autoDismiss: 2,
+				position: 'tc',
+			});
+		}
 	}
 
 	// * handle edit
@@ -49,16 +86,17 @@ export default class TodoItem extends Component {
 
 				<div>
 					<RaisedButton
-						onClick={() => this.handleEdit(todo)}
-						backgroundColor='#009000'
 						label='Edit'
+						backgroundColor='green'
+						onClick={() => this.handleEdit(todo)}
 					/>
+
 					<RaisedButton
-						onClick={this.handleDelete.bind(this)}
-						backgroundColor='red'
 						label='Delete'
-						style={{ marginLeft: '5px' }}
+						backgroundColor='red'
+						onClick={this.handleDelete.bind(this)}
 					/>
+					<NotificationSystem ref={this.notificationSystem} />
 				</div>
 			</div>
 		);
